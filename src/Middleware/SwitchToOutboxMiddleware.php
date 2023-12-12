@@ -25,8 +25,14 @@ use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
  */
 readonly class SwitchToOutboxMiddleware implements MiddlewareInterface
 {
-    public function __construct(private string $outboxTransportName)
+    /**
+     * @var array<array-key, string>
+     */
+    private array $advancedTransports;
+
+    public function __construct(private string $outboxTransportName, string ...$advancedTransports)
     {
+        $this->advancedTransports = $advancedTransports;
     }
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
@@ -47,7 +53,7 @@ readonly class SwitchToOutboxMiddleware implements MiddlewareInterface
     {
         $outboxTransportName = $envelope->last(ReceivedStamp::class)?->getTransportName();
 
-        return $outboxTransportName === $this->outboxTransportName;
+        return in_array($outboxTransportName, [$this->outboxTransportName, ...$this->advancedTransports]);
     }
 
     private function switchToOutboxTransport(Envelope $envelope, StackInterface $stack): Envelope
@@ -56,7 +62,7 @@ readonly class SwitchToOutboxMiddleware implements MiddlewareInterface
 
         $envelope = $envelope->withoutAll(TransportNamesStamp::class);
         $envelope = $envelope->with(
-            new TransportNamesStamp($this->outboxTransportName),
+            new TransportNamesStamp([$this->outboxTransportName, ...$this->advancedTransports]),
             new MessageSentToOutboxStamp($originalTransportNames),
         );
 
@@ -66,6 +72,7 @@ readonly class SwitchToOutboxMiddleware implements MiddlewareInterface
     private function publish(Envelope $envelope, StackInterface $stack): Envelope
     {
         $originalTransportNames = $envelope->last(MessageSentToOutboxStamp::class)?->originalTransportNames;
+        $receivedTransportName = $envelope->last(ReceivedStamp::class)?->getTransportName();
 
         $envelope = $envelope
         /** Indicates that {@see SendMessageMiddleware} can try to send this envelope */
@@ -80,7 +87,7 @@ readonly class SwitchToOutboxMiddleware implements MiddlewareInterface
         return $stack->next()->handle($envelope, $stack)->with(
         /** Indicates that {@see HandleMessageMiddleware} do not need to handle the message */
             new HandledStamp(null, 'none'),
-            new MessageReceivedFromOutboxStamp($this->outboxTransportName),
+            new MessageReceivedFromOutboxStamp($receivedTransportName),
         );
     }
 

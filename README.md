@@ -39,6 +39,8 @@ framework:
         ### outbox: 'doctrine://%env(resolve:DATABASE_URL)%'
         ### outbox: 'doctrine://default?table_name=outbox&queue_name=custom'
             outbox: 'doctrine://default'
+        ### Advance stored outbox transport
+            stored: 
 
     ### routing: ...
 ```
@@ -58,7 +60,8 @@ framework:
                     allow_no_handlers: true
           
                 middleware:
-                ### Add the middleware with configured outbox transport name
+                ### Add the middleware with configured outbox transport name or/and advanced names
+                ### - Creatortsv\Messenger\Outbox\Middleware\SwitchToOutboxMiddleware: [ outbox, store, logs ]
                     - Creatortsv\Messenger\Outbox\Middleware\SwitchToOutboxMiddleware: [ outbox ]
     
     ### transports: ... Outbox transport configuration
@@ -93,8 +96,10 @@ readonly class UserService
 ```
 
 ## Run outbox consumer
+
+Run consumer with outbox transport name
 ```shell
-php bin/console messenger:consume outbox
+php bin/console messenger:consume [name]
 ```
 
 Each message which is consumed by the worker will be automatically sent to the original transport, thanks to the `SwitchToOutboxMiddleware` class
