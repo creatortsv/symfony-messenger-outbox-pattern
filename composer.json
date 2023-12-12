@@ -1,0 +1,45 @@
+{
+  "name": "creatortsv/symfony-messenger-outbox-pattern",
+  "description": "Outbox pattern for the symfony-messenger component",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "creatortsv",
+      "email": "creatortsv@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2|^8.3",
+    "symfony/contracts": "^2.5|^3.4",
+    "symfony/messenger": "^6.4|^7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5",
+    "squizlabs/php_codesniffer": "^3.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Creatortsv\\Messenger\\Outbox\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Creatortsv\\Messenger\\Outbox\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "code-style": "@php vendor/bin/phpcs --standard=PSR12 src tests",
+    "test": "@php vendor/bin/phpunit tests --testdox --no-configuration --colors=always"
+  }
+}
