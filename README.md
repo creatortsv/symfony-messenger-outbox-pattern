@@ -26,6 +26,8 @@ This guide shows how the symfony messenger component should be configured
 ### Configure transports
 
 ```yaml
+# config/packages/messenger.yaml
+
 framework:
     messenger:
       
@@ -43,6 +45,8 @@ framework:
 
 ### Configure message bus
 ```yaml
+# config/packages/messenger.yaml
+
 framework:
     messenger:
         buses:
@@ -55,7 +59,7 @@ framework:
           
                 middleware:
                 ### Add the middleware with configured outbox transport name
-                    - Creatortsv\Messenger\Outbox\Middleware\OutboxMiddleware: [ outbox ]
+                    - Creatortsv\Messenger\Outbox\Middleware\SwitchToOutboxMiddleware: [ outbox ]
     
     ### transports: ... Outbox transport configuration
 
@@ -92,3 +96,5 @@ readonly class UserService
 ```shell
 php bin/console messenger:consume outbox
 ```
+
+Each message which is consumed by the worker will be automatically sent to the original transport, thanks to the `SwitchToOutboxMiddleware` class
