@@ -1,5 +1,7 @@
 # Symfony messenger outbox pattern
 
+[![CI](https://github.com/creatortsv/symfony-messenger-outbox-pattern/actions/workflows/php.yml/badge.svg)](https://github.com/creatortsv/symfony-messenger-outbox-pattern/actions/workflows/php.yml)
+
 This package is an extension for the [symfony/messenger](https://symfony.com/doc/current/components/messenger.html) component that implements the [Transactional outbox](https://microservices.io/patterns/data/transactional-outbox.html) pattern.
 It provides the special middleware that navigates your original message to the message broker through the outbox transport
 
